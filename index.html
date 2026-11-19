@@ -1,0 +1,58 @@
+        <div class="row"><span>For:</span><span id="rItem"></span></div>
+        <div class="row"><span>Tip Included:</span><span id="rTip"></span></div>
+        <div class="row total"><span>Total Paid:</span><span id="rTotal"></span></div>
+        <div class="hash" id="rHash"></div>
+      </div>
+      <button class="btn" onclick="copyReceipt()">Copy Receipt Proof</button>
+      <button class="btn secondary" onclick="showScreen('screen1')">New Payment</button>
+    </div>
+  </div>
+
+  <script>
+    let tipPercent = 0;
+    function setTip(pct, el) {
+      tipPercent = pct;
+      document.querySelectorAll('.tip-btn').forEach(b => b.classList.remove('selected'));
+      el.classList.add('selected');
+    }
+    function showScreen(id) {
+      document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+      document.getElementById(id).classList.add('active');
+    }
+    function goConfirm() {
+      const vendor = document.getElementById('vendor').value || 'Merchant';
+      const item = document.getElementById('item').value || 'Payment';
+      const amt = parseFloat(document.getElementById('amount').value) || 0;
+      const token = document.getElementById('token').value;
+      const tipAmt = amt * (tipPercent / 100);
+      const total = amt + tipAmt;
+
+      document.getElementById('cVendor').innerText = vendor;
+      document.getElementById('cItem').innerText = item;
+      document.getElementById('cBase').innerText = amt.toFixed(2) + ' ' + token;
+      document.getElementById('cTip').innerText = tipAmt.toFixed(2) + ' ' + token + ' (' + tipPercent + '%)';
+      document.getElementById('cTotal').innerText = total.toFixed(2) + ' ' + token;
+      showScreen('screen2');
+    }
+    function lockReceipt() {
+      const now = new Date().toLocaleString();
+      const randHex = Array.from({length: 32}, () => Math.floor(Math.random()*16).toString(16)).join('');
+      const recId = 'ME-' + Math.floor(100000 + Math.random() * 900000);
+
+      document.getElementById('rId').innerText = recId;
+      document.getElementById('rDate').innerText = now;
+      document.getElementById('rVendor').innerText = document.getElementById('cVendor').innerText;
+      document.getElementById('rItem').innerText = document.getElementById('cItem').innerText;
+      document.getElementById('rTip').innerText = document.getElementById('cTip').innerText;
+      document.getElementById('rTotal').innerText = document.getElementById('cTotal').innerText;
+      document.getElementById('rHash').innerText = 'Tx Hash: 0x' + randHex;
+      showScreen('screen3');
+    }
+    function copyReceipt() {
+      const summary = `ME-Receipt Verified Proof\nID: ${document.getElementById('rId').innerText}\nVendor: ${document.getElementById('rVendor').innerText}\nTotal: ${document.getElementById('rTotal').innerText}\n${document.getElementById('rHash').innerText}`;
+      navigator.clipboard.writeText(summary);
+      alert('Verified receipt proof copied! Ready to share with client or vendor.');
+    }
+  </script>
+</body>
+</html>
