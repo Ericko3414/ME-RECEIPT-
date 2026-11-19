@@ -1,7 +1,7 @@
 ME-Receipt
 **Verified Digital Receipt & Tipping Tool on the ME Network**
 
-🔗 **Live Mobile Demo:** [https://github.io](https://github.io)
+🔗 **Live Mobile Demo:**  Demo:** https://ericko3414.github.io/ME-RECEIPT-/
 
 ## What It Does
 ME-Receipt lets everyday vendors, freelancers, and clients send a payment, add an optional tip, and lock a permanent, verifiable digital receipt directly on the ME Network—all from a smartphone.
