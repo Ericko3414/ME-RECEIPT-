@@ -1,100 +1,73 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>ME-Receipt (ME Network)</title>
-  <style>
-    * { box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
-    body {
-      margin: 0;
-      padding: 20px;
-      background-color: #0b111e;
-      color: #ffffff;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      min-height: 100vh;
-    }
-    .card {
-      background-color: #131c2e;
-      border: 1px solid #1e2d47;
-      border-radius: 16px;
-      padding: 24px;
-      width: 100%;
-      max-width: 400px;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
-    }
-    .header {
-      font-size: 22px;
-      font-weight: 700;
-      margin-bottom: 20px;
-    }
-    .header span {
-      font-size: 13px;
-      font-weight: 500;
-      color: #10b981;
-    }
-    .field-group { margin-bottom: 14px; }
-    label {
-      display: block;
-      font-size: 12px;
-      color: #94a3b8;
-      margin-bottom: 5px;
-    }
-    input, select {
-      width: 100%;
-      padding: 13px 14px;
-      background-color: #1a253b;
-      border: 1px solid #283754;
-      border-radius: 10px;
-      color: #ffffff;
-      font-size: 15px;
-      outline: none;
-    }
-    input:focus, select:focus { border-color: #10b981; }
-    .btn {
-      width: 100%;
-      padding: 15px;
-      margin-top: 8px;
-      background-color: #10b981;
-      color: #06281e;
-      font-size: 16px;
-      font-weight: 700;
-      border: none;
-      border-radius: 10px;
+    .scan-box {
+      background-color: #ffffff;
+      padding: 6px;
+      border-radius: 8px;
+      border: 2px solid #10b981;
+      text-align: center;
       cursor: pointer;
+      flex-shrink: 0;
     }
-    .btn:active { opacity: 0.9; }
-    .receipt-box {
-      background-color: #122429;
-      border: 1px solid #10b981;
-      border-radius: 12px;
-      padding: 18px;
-      margin-bottom: 18px;
-      line-height: 1.65;
-      font-size: 15px;
+    .scan-label {
+      color: #06281e;
+      font-size: 9px;
+      font-weight: 800;
+      letter-spacing: 0.4px;
+      margin-top: 3px;
+      text-transform: uppercase;
     }
-    .verified-title {
-      color: #34d399;
-      font-weight: 700;
-      font-size: 16px;
-      margin-bottom: 10px;
+    .summary-banner {
+      background-color: #0d1b20;
+      border-left: 3px solid #10b981;
+      padding: 9px 11px;
+      margin: 10px 0;
+      border-radius: 6px;
+      font-size: 13.5px;
+      color: #e2e8f0;
+      line-height: 1.45;
+    }
+    .addr-tag {
+      font-family: monospace;
+      font-size: 12.5px;
+      color: #93c5fd;
+    }
+    .divider {
+      border: 0;
+      border-top: 1px solid #1e3a3a;
+      margin: 8px 0;
     }
     .copy-btn {
       background-color: #1e2d47;
       color: #e2e8f0;
       border: 1px solid #334155;
       border-radius: 6px;
-      padding: 3px 9px;
-      font-size: 12px;
-      margin-left: 8px;
+      padding: 2px 8px;
+      font-size: 11.5px;
+      margin-top: 4px;
       cursor: pointer;
     }
     .gas-text {
       color: #94a3b8;
+      font-size: 12.5px;
+      margin-top: 6px;
+    }
+    .thankyou-badge {
+      margin-top: 10px;
+      padding: 9px 10px;
+      background-color: #0d2b24;
+      border: 1px solid #10b98144;
+      border-radius: 8px;
+      text-align: center;
       font-size: 13px;
-      margin-top: 4px;
+      font-weight: 600;
+      color: #6ee7b7;
+      line-height: 1.4;
+    }
+    .thankyou-sub {
+      display: block;
+      font-size: 11.5px;
+      font-weight: 400;
+      color: #a7f3d0;
+      margin-top: 2px;
     }
     .hidden { display: none; }
   </style>
@@ -107,8 +80,23 @@
     <!-- Checkout Form -->
     <div id="checkout-view">
       <div class="field-group">
+        <label>Customer Name</label>
+        <input type="text" id="customer" placeholder="e.g., Erick Otieno" value="Erick Otieno" />
+      </div>
+
+      <div class="field-group">
+        <label>Customer ME Wallet Address</label>
+        <input type="text" id="customer-addr" placeholder="me1..." value="me1nnzq78vqdq3mrg0zpsvyf3a3xk9fzst04vx0c9" />
+      </div>
+
+      <div class="field-group">
         <label>Vendor / Freelancer Name</label>
         <input type="text" id="vendor" placeholder="e.g., Campus Kiosk" value="Campus Kiosk" />
+      </div>
+
+      <div class="field-group">
+        <label>Vendor ME Wallet Address</label>
+        <input type="text" id="vendor-addr" placeholder="me1..." value="me1kiosk92x8a4m7p0q5w3e9r2t6y8u1i4o7p2a9s" />
       </div>
 
       <div class="field-group">
@@ -116,58 +104,116 @@
         <input type="text" id="item" placeholder="e.g., Lunch & Juice" value="Lunch & Juice" />
       </div>
 
-      <div class="field-group">
-        <label>Base Amount</label>
-        <input type="number" id="amount" placeholder="e.g., 5" value="5" min="0.01" step="any" />
+      <div class="row">
+        <div class="field-group">
+          <label>Base Amount</label>
+          <input type="number" id="amount" placeholder="50" value="50" min="0.01" step="any" />
+        </div>
+
+        <div class="field-group">
+          <label>Token</label>
+          <select id="token">
+            <option value="USDT">USDT</option>
+            <option value="MECS" selected>MECS</option>
+          </select>
+        </div>
+
+        <div class="field-group">
+          <label>Add Tip</label>
+          <select id="tip">
+            <option value="0">0%</option>
+            <option value="5">5%</option>
+            <option value="10">10%</option>
+            <option value="15" selected>15%</option>
+          </select>
+        </div>
       </div>
 
       <div class="field-group">
-        <label>Token</label>
-        <select id="token">
-          <option value="USDT">USDT</option>
-          <option value="MECS">MECS</option>
-        </select>
+        <label>ME Network Tx Hash (Optional — from ME Pass)</label>
+        <input type="text" id="tx-hash" placeholder="Paste transaction hash after paying..." />
       </div>
 
-      <div class="field-group">
-        <label>Add Tip</label>
-        <select id="tip">
-          <option value="0">0% Tip</option>
-          <option value="5">5% Tip</option>
-          <option value="10" selected>10% Tip</option>
-          <option value="15">15% Tip</option>
-        </select>
-      </div>
-
-      <button class="btn" onclick="generateReceipt()">Pay &amp; Lock Receipt</button>
+      <button class="btn" onclick="generateReceipt()">Generate Verified Receipt</button>
     </div>
 
     <!-- Verified Receipt Card -->
     <div id="receipt-view" class="hidden">
       <div class="receipt-box">
-        <div class="verified-title">&#10003; Verified on ME Network</div>
-        <div>
-          ID: <strong id="r-id">ME-284066</strong>
-          <button class="copy-btn" id="copy-btn" onclick="copyReceiptId()">Copy ID</button>
+        <div class="receipt-top">
+          <div>
+            <div class="verified-title">&#10003; ME-Receipt &#129309;</div>
+            <div>ID: <strong id="r-id">ME-284066</strong></div>
+            <button class="copy-btn" id="copy-btn" onclick="copyReceiptId()">Copy ID</button>
+          </div>
+
+          <!-- Small ID-Style Verification Scan Stamp -->
+          <div class="scan-box" onclick="toggleZoom()" title="Tap to enlarge scan">
+            <div id="qrcode"></div>
+            <div class="scan-label">Scan Verify</div>
+          </div>
         </div>
+
+        <div class="summary-banner" id="r-summary"></div>
+
+        <div>Date: <span id="r-date"></span> &bull; <span id="r-time"></span></div>
+        <div>Customer: <span id="r-customer"></span></div>
+        <div>From: <span class="addr-tag" id="r-from-addr"></span></div>
         <div>Vendor: <span id="r-vendor"></span></div>
+        <div>To: <span class="addr-tag" id="r-to-addr"></span></div>
+        <hr class="divider" />
         <div>Item: <span id="r-item"></span></div>
         <div>Tip: <span id="r-tip"></span></div>
         <div><strong>Total Paid: <span id="r-total"></span></strong></div>
-        <div class="gas-text">Gas: 0.0001 MEC</div>
+        <div class="gas-text">Tx Hash: <span class="addr-tag" id="r-tx"></span></div>
+
+        <div class="thankyou-badge">
+          <span id="r-thanks"></span>
+          <span class="thankyou-sub" id="r-thanks-sub"></span>
+        </div>
       </div>
 
-      <button class="btn" onclick="resetForm()">New Payment</button>
+      <button class="btn" onclick="resetForm()">New Receipt</button>
     </div>
   </div>
 
   <script>
+    let isZoomed = false;
+    let currentPayload = "";
+
+    function shortenAddr(addr) {
+      if (!addr || addr.length <= 14) return addr || "Not provided";
+      return addr.slice(0, 7) + "..." + addr.slice(-6);
+    }
+
+    function renderQR(size) {
+      const qrContainer = document.getElementById("qrcode");
+      qrContainer.innerHTML = "";
+      new QRCode(qrContainer, {
+        text: currentPayload,
+        width: size,
+        height: size,
+        colorDark: "#06281e",
+        colorLight: "#ffffff",
+        correctLevel: QRCode.CorrectLevel.M
+      });
+    }
+
+    function toggleZoom() {
+      isZoomed = !isZoomed;
+      renderQR(isZoomed ? 150 : 68);
+    }
+
     function generateReceipt() {
+      const customer = document.getElementById("customer").value.trim() || "Walk-in Customer";
+      const customerAddr = document.getElementById("customer-addr").value.trim();
       const vendor = document.getElementById("vendor").value.trim() || "Verified Vendor";
+      const vendorAddr = document.getElementById("vendor-addr").value.trim();
       const item = document.getElementById("item").value.trim() || "Goods / Service";
       const amount = parseFloat(document.getElementById("amount").value) || 0;
       const token = document.getElementById("token").value;
       const tipPercent = parseFloat(document.getElementById("tip").value) || 0;
+      const txHash = document.getElementById("tx-hash").value.trim();
 
       if (amount <= 0) {
         alert("Please enter a valid payment amount.");
@@ -178,28 +224,16 @@
       const total = (amount + tipAmount).toFixed(2);
       const randomId = "ME-" + Math.floor(100000 + Math.random() * 900000);
 
-      document.getElementById("r-id").textContent = randomId;
-      document.getElementById("r-vendor").textContent = vendor;
-      document.getElementById("r-item").textContent = item;
-      document.getElementById("r-tip").textContent = tipPercent + "% (" + tipAmount.toFixed(2) + " " + token + ")";
-      document.getElementById("r-total").textContent = total + " " + token;
-      document.getElementById("copy-btn").textContent = "Copy ID";
+      const now = new Date();
+      const formattedDate = now.toLocaleDateString("en-GB", {
+        day: "2-digit",
+        month: "short",
+        year: "numeric"
+      });
+      const formattedTime = now.toLocaleTimeString([], {
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit"
+      });
 
-      document.getElementById("checkout-view").classList.add("hidden");
-      document.getElementById("receipt-view").classList.remove("hidden");
-    }
-
-    function copyReceiptId() {
-      const idText = document.getElementById("r-id").textContent;
-      navigator.clipboard.writeText(idText);
-      document.getElementById("copy-btn").textContent = "Copied!";
-    }
-
-    function resetForm() {
-      document.getElementById("receipt-view").classList.add("hidden");
-      document.getElementById("checkout-view").classList.remove("hidden");
-    }
-  </script>
-
-</body>
-</html>
+      const tipNote = tipPercent > 0 ? ` (incl. ${tipPercent}% tip)` : "";
