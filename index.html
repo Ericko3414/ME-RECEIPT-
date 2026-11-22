@@ -1,3 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ME-Receipt (ME Network)</title>
+  <script src="https://cloudflare.com"></script>
+  <script src="https://jsdelivr.net"></script>
+  <style>
+    * { box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+    body {
+      margin: 0;
+      padding: 20px;
+      background-color: #0b111e;
+      color: #ffffff;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+    .card {
+      background-color: #131c2e;
+      border: 1px solid #1e2d47;
+      border-radius: 16px;
+      padding: 24px;
+      width: 100%;
+      max-width: 400px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+    }
+    .header {
+      font-size: 22px;
+      font-weight: 700;
+      margin-bottom: 18px;
+    }
+    .header span {
+      font-size: 13px;
+      font-weight: 500;
+      color: #10b981;
+    }
+    .field-group { margin-bottom: 12px; }
+    label {
+      display: block;
+      font-size: 12px;
+      color: #94a3b8;
+      margin-bottom: 4px;
+    }
+    input, select {
+      width: 100%;
+      padding: 11px 13px;
+      background-color: #1a253b;
+      border: 1px solid #283754;
+      border-radius: 10px;
+      color: #ffffff;
+      font-size: 14px;
+      outline: none;
+    }
+    input:focus, select:focus { border-color: #10b981; }
+    .row {
+      display: flex;
+      gap: 10px;
+    }
+    .row .field-group { flex: 1; }
+    .warning-note {
+      background-color: #291d12;
+      border: 1px solid #f59e0b66;
+      color: #fcd34d;
+      font-size: 11.5px;
+      padding: 8px 10px;
+      border-radius: 8px;
+      margin-top: 6px;
+      line-height: 1.4;
+    }
+    .btn {
+      width: 100%;
+      padding: 14px;
+      margin-top: 10px;
+      background-color: #10b981;
+      color: #06281e;
+      font-size: 16px;
+      font-weight: 700;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+    }
+    .btn:active { opacity: 0.9; }
+    .btn-secondary {
+      width: 100%;
+      padding: 11px;
+      margin-top: 8px;
+      background-color: #1e293b;
+      color: #fca5a5;
+      font-size: 13.5px;
+      font-weight: 600;
+      border: 1px solid #ef444455;
+      border-radius: 10px;
+      cursor: pointer;
+    }
+    .receipt-box {
+      background-color: #122429;
+      border: 1px solid #10b981;
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 14px;
+      line-height: 1.55;
+      font-size: 14px;
+    }
+    .receipt-box.refund-mode {
+      background-color: #26161a;
+      border-color: #f87171;
+    }
+    .status-banner {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      background-color: #0f253e;
+      border: 1px solid #38bdf866;
+      border-radius: 9px;
+      padding: 8px 12px;
+      margin-bottom: 12px;
+      color: #e0f2fe;
+      font-weight: 700;
+      font-size: 14.5px;
+    }
+    .status-banner.refund-status {
+      background-color: #3b171d;
+      border-color: #f8717166;
+      color: #fecaca;
+    }
+    .blue-tick {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 22px;
+      height: 22px;
+      background-color: #1d9bf0;
+      color: #ffffff;
+      border-radius: 50%;
+      flex-shrink: 0;
+      box-shadow: 0 0 8px rgba(29, 155, 240, 0.5);
+    }
+    .receipt-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 10px;
+    }
+    .verified-title {
+      color: #34d399;
+      font-weight: 700;
+      font-size: 15.5px;
+      margin-bottom: 4px;
+    }
+    .refund-title {
+      color: #fca5a5;
+    }
+    .meta-num {
+      font-family: monospace;
+      font-size: 12px;
+      line-height: 1.45;
+    }
+    .receipt-no { color: #ffffff; font-weight: 700; }
+    .serial-no { color: #fbbf24; }
+    .verify-id { color: #34d399; }
+    .ref-tag {
+      display: inline-block;
+      margin-top: 4px;
+      padding: 2px 6px;
+      background-color: #7f1d1d;
+      color: #fecaca;
+      border-radius: 5px;
+      font-family: monospace;
+      font-size: 11px;
+    }
     .scan-box {
       background-color: #ffffff;
       padding: 6px;
@@ -40,15 +214,29 @@
       color: #e2e8f0;
       border: 1px solid #334155;
       border-radius: 6px;
-      padding: 2px 8px;
-      font-size: 11.5px;
-      margin-top: 4px;
+      padding: 3px 8px;
+      font-size: 11px;
+      margin-top: 5px;
       cursor: pointer;
     }
     .gas-text {
       color: #94a3b8;
       font-size: 12.5px;
       margin-top: 6px;
+    }
+    .barcode-strip {
+      margin-top: 10px;
+      background-color: #ffffff;
+      border-radius: 8px;
+      padding: 6px 8px 4px 8px;
+      text-align: center;
+      border: 1px solid #10b98166;
+    }
+    .barcode-strip svg {
+      max-width: 100%;
+      height: 46px;
+      display: block;
+      margin: 0 auto;
     }
     .thankyou-badge {
       margin-top: 10px;
@@ -69,6 +257,18 @@
       color: #a7f3d0;
       margin-top: 2px;
     }
+    .me-network-promo {
+      margin-top: 8px;
+      padding-top: 8px;
+      border-top: 1px dashed #1e3a3a;
+      text-align: center;
+      font-size: 11.5px;
+      color: #93c5fd;
+      line-height: 1.4;
+    }
+    .me-network-promo strong {
+      color: #34d399;
+    }
     .hidden { display: none; }
   </style>
 </head>
@@ -79,6 +279,10 @@
 
     <!-- Checkout Form -->
     <div id="checkout-view">
+      <div id="refund-banner" class="warning-note hidden" style="margin-bottom: 12px;">
+        <strong>Correction / Refund Mode:</strong> Linked to <span id="ref-target"></span>. Original on-chain receipts are immutable; this creates an official adjustment record.
+      </div>
+
       <div class="field-group">
         <label>Customer Name</label>
         <input type="text" id="customer" placeholder="e.g., Erick Otieno" value="Erick Otieno" />
@@ -134,106 +338,25 @@
         <input type="text" id="tx-hash" placeholder="Paste transaction hash after paying..." />
       </div>
 
-      <button class="btn" onclick="generateReceipt()">Generate Verified Receipt</button>
+      <div class="warning-note">
+        &#9888; Verify the <strong>me1...</strong> wallet address and amount carefully before locking. On-chain transfers cannot be reversed without a linked refund receipt.
+      </div>
+
+      <button class="btn" id="submit-btn" onclick="generateReceipt()">Pay &amp; Lock Receipt</button>
     </div>
 
     <!-- Verified Receipt Card -->
     <div id="receipt-view" class="hidden">
-      <div class="receipt-box">
+      <div class="receipt-box" id="receipt-card-box">
+        <!-- Blue Tick Payment Status Banner -->
+        <div class="status-banner" id="r-status-banner">
+          <span class="blue-tick" id="r-blue-tick">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="20 6 9 17 4 12"></polyline>
+            </svg>
+          </span>
+          <span id="r-status-text">Payment Successful</span>
+        </div>
+
         <div class="receipt-top">
           <div>
-            <div class="verified-title">&#10003; ME-Receipt &#129309;</div>
-            <div>ID: <strong id="r-id">ME-284066</strong></div>
-            <button class="copy-btn" id="copy-btn" onclick="copyReceiptId()">Copy ID</button>
-          </div>
-
-          <!-- Small ID-Style Verification Scan Stamp -->
-          <div class="scan-box" onclick="toggleZoom()" title="Tap to enlarge scan">
-            <div id="qrcode"></div>
-            <div class="scan-label">Scan Verify</div>
-          </div>
-        </div>
-
-        <div class="summary-banner" id="r-summary"></div>
-
-        <div>Date: <span id="r-date"></span> &bull; <span id="r-time"></span></div>
-        <div>Customer: <span id="r-customer"></span></div>
-        <div>From: <span class="addr-tag" id="r-from-addr"></span></div>
-        <div>Vendor: <span id="r-vendor"></span></div>
-        <div>To: <span class="addr-tag" id="r-to-addr"></span></div>
-        <hr class="divider" />
-        <div>Item: <span id="r-item"></span></div>
-        <div>Tip: <span id="r-tip"></span></div>
-        <div><strong>Total Paid: <span id="r-total"></span></strong></div>
-        <div class="gas-text">Tx Hash: <span class="addr-tag" id="r-tx"></span></div>
-
-        <div class="thankyou-badge">
-          <span id="r-thanks"></span>
-          <span class="thankyou-sub" id="r-thanks-sub"></span>
-        </div>
-      </div>
-
-      <button class="btn" onclick="resetForm()">New Receipt</button>
-    </div>
-  </div>
-
-  <script>
-    let isZoomed = false;
-    let currentPayload = "";
-
-    function shortenAddr(addr) {
-      if (!addr || addr.length <= 14) return addr || "Not provided";
-      return addr.slice(0, 7) + "..." + addr.slice(-6);
-    }
-
-    function renderQR(size) {
-      const qrContainer = document.getElementById("qrcode");
-      qrContainer.innerHTML = "";
-      new QRCode(qrContainer, {
-        text: currentPayload,
-        width: size,
-        height: size,
-        colorDark: "#06281e",
-        colorLight: "#ffffff",
-        correctLevel: QRCode.CorrectLevel.M
-      });
-    }
-
-    function toggleZoom() {
-      isZoomed = !isZoomed;
-      renderQR(isZoomed ? 150 : 68);
-    }
-
-    function generateReceipt() {
-      const customer = document.getElementById("customer").value.trim() || "Walk-in Customer";
-      const customerAddr = document.getElementById("customer-addr").value.trim();
-      const vendor = document.getElementById("vendor").value.trim() || "Verified Vendor";
-      const vendorAddr = document.getElementById("vendor-addr").value.trim();
-      const item = document.getElementById("item").value.trim() || "Goods / Service";
-      const amount = parseFloat(document.getElementById("amount").value) || 0;
-      const token = document.getElementById("token").value;
-      const tipPercent = parseFloat(document.getElementById("tip").value) || 0;
-      const txHash = document.getElementById("tx-hash").value.trim();
-
-      if (amount <= 0) {
-        alert("Please enter a valid payment amount.");
-        return;
-      }
-
-      const tipAmount = amount * (tipPercent / 100);
-      const total = (amount + tipAmount).toFixed(2);
-      const randomId = "ME-" + Math.floor(100000 + Math.random() * 900000);
-
-      const now = new Date();
-      const formattedDate = now.toLocaleDateString("en-GB", {
-        day: "2-digit",
-        month: "short",
-        year: "numeric"
-      });
-      const formattedTime = now.toLocaleTimeString([], {
-        hour: "2-digit",
-        minute: "2-digit",
-        second: "2-digit"
-      });
-
-      const tipNote = tipPercent > 0 ? ` (incl. ${tipPercent}% tip)` : "";
