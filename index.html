@@ -95,6 +95,18 @@
       border-radius: 10px;
       cursor: pointer;
     }
+    .btn-outline {
+      width: 100%;
+      padding: 11px;
+      margin-top: 8px;
+      background-color: transparent;
+      color: #94a3b8;
+      font-size: 13.5px;
+      font-weight: 600;
+      border: 1px solid #283754;
+      border-radius: 10px;
+      cursor: pointer;
+    }
     .receipt-box {
       background-color: #122429;
       border: 1px solid #10b981;
@@ -327,8 +339,8 @@
           <select id="tip">
             <option value="0">0%</option>
             <option value="5">5%</option>
-            <option value="10">10%</option>
-            <option value="15" selected>15%</option>
+            <option value="10" selected>10%</option>
+            <option value="15">15%</option>
           </select>
         </div>
       </div>
@@ -339,10 +351,10 @@
       </div>
 
       <div class="warning-note">
-        &#9888; Verify the <strong>me1...</strong> wallet address and amount carefully before locking. On-chain transfers cannot be reversed without a linked refund receipt.
+        ⚠ Verify the <strong>me1...</strong> wallet address and amount carefully before locking. On-chain transfers cannot be reversed without a linked refund receipt.
       </div>
 
-      <button class="btn" id="submit-btn" onclick="generateReceipt()">Pay &amp; Lock Receipt</button>
+      <button type="button" class="btn" id="submit-btn" onclick="generateReceipt()">Pay &amp; Lock Receipt</button>
     </div>
 
     <!-- Verified Receipt Card -->
@@ -351,12 +363,3 @@
         <!-- Blue Tick Payment Status Banner -->
         <div class="status-banner" id="r-status-banner">
           <span class="blue-tick" id="r-blue-tick">
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round">
-              <polyline points="20 6 9 17 4 12"></polyline>
-            </svg>
-          </span>
-          <span id="r-status-text">Payment Successful</span>
-        </div>
-
-        <div class="receipt-top">
-          <div>
