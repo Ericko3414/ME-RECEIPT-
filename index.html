@@ -82,7 +82,23 @@
       border-radius: 10px;
       cursor: pointer;
     }
-    .btn:active { opacity: 0.9; }
+    .btn:disabled {
+      opacity: 0.65;
+      cursor: not-allowed;
+    }
+    .btn:active:not(:disabled) { opacity: 0.9; }
+    .btn-release {
+      width: 100%;
+      padding: 13px;
+      margin-top: 8px;
+      background-color: #38bdf8;
+      color: #082f49;
+      font-size: 15px;
+      font-weight: 700;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+    }
     .btn-secondary {
       width: 100%;
       padding: 11px;
@@ -134,6 +150,11 @@
       font-weight: 700;
       font-size: 14.5px;
     }
+    .status-banner.locked-status {
+      background-color: #2b2110;
+      border-color: #f59e0b88;
+      color: #fde68a;
+    }
     .status-banner.refund-status {
       background-color: #3b171d;
       border-color: #f8717166;
@@ -150,6 +171,18 @@
       border-radius: 50%;
       flex-shrink: 0;
       box-shadow: 0 0 8px rgba(29, 155, 240, 0.5);
+    }
+    .lock-badge-icon {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 22px;
+      height: 22px;
+      background-color: #f59e0b;
+      color: #1c1917;
+      border-radius: 50%;
+      font-size: 12px;
+      flex-shrink: 0;
     }
     .receipt-top {
       display: flex;
@@ -282,6 +315,11 @@
       color: #34d399;
     }
     .hidden { display: none; }
+    @media print {
+      body { background: #ffffff; padding: 0; }
+      .no-print { display: none !important; }
+      .card { box-shadow: none; border: none; max-width: 100%; }
+    }
   </style>
 </head>
 <body>
@@ -322,45 +360,21 @@
 
       <div class="row">
         <div class="field-group">
-          <label>Base Amount</label>
-          <input type="number" id="amount" placeholder="50" value="50" min="0.01" step="any" />
+          <label>Amount</label>
+          <input type="number" id="amount" placeholder="250" value="250" step="any" min="0.01" />
         </div>
-
         <div class="field-group">
-          <label>Token</label>
-          <select id="token">
+          <label>Currency / Token</label>
+          <select id="currency">
+            <option value="KES">KES (KSh)</option>
+            <option value="ME">ME Token</option>
             <option value="USDT">USDT</option>
-            <option value="MECS" selected>MECS</option>
-          </select>
-        </div>
-
-        <div class="field-group">
-          <label>Add Tip</label>
-          <select id="tip">
-            <option value="0">0%</option>
-            <option value="5">5%</option>
-            <option value="10" selected>10%</option>
-            <option value="15">15%</option>
           </select>
         </div>
       </div>
 
-      <div class="field-group">
-        <label>ME Network Tx Hash (Optional — from ME Pass)</label>
-        <input type="text" id="tx-hash" placeholder="Paste transaction hash after paying..." />
-      </div>
-
-      <div class="warning-note">
-        ⚠ Verify the <strong>me1...</strong> wallet address and amount carefully before locking. On-chain transfers cannot be reversed without a linked refund receipt.
-      </div>
-
-      <button type="button" class="btn" id="submit-btn">Pay &amp; Lock Receipt</button>
+      <button type="button" class="btn" id="pay-lock-btn" onclick="payAndLock()">🔒 Pay & Lock</button>
+      <button type="button" class="btn-outline hidden" id="cancel-refund-btn" onclick="cancelRefund()">Cancel Refund Mode</button>
     </div>
 
-    <!-- Verified Receipt Card -->
-    <div id="receipt-view" class="hidden">
-      <div class="receipt-box" id="receipt-card-box">
-        <div class="status-banner" id="r-status-banner">
-          <span class="blue-tick" id="r-blue-tick">
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round">
-              <polyline points="20 6 9 17 4 12"></polyline>
+    <!-- Receipt Display View -->
