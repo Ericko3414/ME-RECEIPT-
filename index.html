@@ -1,149 +1,49 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>ME-Receipt (ME Network) - Demo</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ME-Receipt Demo</title>
   <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: system-ui, -apple-system, sans-serif; }
-    body { background: #0b1120; color: #e2e8f0; padding: 14px; display: flex; justify-content: center; }
-    .container { width: 100%; max-width: 460px; }
-    .demo-bar { background: #1e293b; border: 1px dashed #38bdf8; border-radius: 10px; padding: 10px 12px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; }
-    .demo-bar span { font-size: 12px; color: #7dd3fc; font-weight: 600; }
-    .btn-demo { background: #0284c7; color: #fff; border: none; padding: 6px 11px; border-radius: 6px; font-size: 12px; font-weight: 600; cursor: pointer; }
-    .card { background: #111827; border: 1px solid #1f2937; border-radius: 14px; padding: 16px; }
-    h1 { font-size: 18px; color: #f8fafc; margin-bottom: 4px; }
-    .subtitle { font-size: 12px; color: #94a3b8; margin-bottom: 14px; }
-    .form-group { margin-bottom: 10px; }
-    label { display: block; font-size: 12px; color: #cbd5e1; margin-bottom: 4px; }
-    input, select { width: 100%; padding: 9px 11px; background: #1e293b; border: 1px solid #334155; border-radius: 8px; color: #f8fafc; font-size: 13px; }
-    input:focus, select:focus { outline: none; border-color: #10b981; }
-    .tip-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
-    .tip-btn { background: #1e293b; border: 1px solid #334155; color: #cbd5e1; padding: 7px; border-radius: 7px; font-size: 12px; font-weight: 600; cursor: pointer; }
-    .tip-btn.active { background: #064e3b; border-color: #10b981; color: #6ee7b7; }
-    .escrow-box { background: #0d1b20; border: 1px solid #10b981; border-radius: 8px; padding: 10px 12px; margin: 12px 0; font-size: 14px; font-weight: 700; color: #34d399; display: flex; justify-content: space-between; }
-    .btn-primary { width: 100%; padding: 11px; background: #10b981; color: #064e3b; font-size: 14px; font-weight: 700; border: none; border-radius: 9px; cursor: pointer; }
-    .btn-secondary { width: 100%; padding: 10px; margin-top: 8px; background: #1e293b; color: #fca5a5; font-size: 13px; font-weight: 600; border: 1px solid #ef444455; border-radius: 9px; cursor: pointer; }
-    .btn-outline { width: 100%; padding: 10px; background: transparent; color: #94a3b8; font-size: 13px; font-weight: 600; border: 1px solid #283754; border-radius: 9px; cursor: pointer; }
-    .status-banner { display: flex; align-items: center; justify-content: center; gap: 6px; background: #0f253e; border: 1px solid #38bdf866; border-radius: 8px; padding: 8px; margin: 12px 0; font-size: 12.5px; font-weight: 600; color: #e0f2fe; }
-    .status-banner.locked { background: #2b2110; border-color: #f59e0b88; color: #fde68a; }
-    .status-banner.refund { background: #3b171d; border-color: #f8717166; color: #fecaca; }
-    .receipt-box { background: #122429; border: 1px solid #10b981; border-radius: 12px; padding: 14px; font-size: 13px; line-height: 1.5; }
-    .receipt-box.refund-mode { background: #26161a; border-color: #f87171; }
-    .receipt-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; margin-bottom: 10px; }
-    .verified-title { color: #34d399; font-weight: 700; font-size: 15px; }
-    .refund-title { color: #fca5a5; }
-    .meta-num { font-family: monospace; font-size: 11.5px; color: #cbd5e1; }
-    .receipt-no { color: #fff; font-weight: 700; }
-    .serial-no { color: #fbbf24; }
-    .verify-id { color: #34d399; }
-    .ref-tag { display: inline-block; margin-top: 3px; padding: 2px 6px; background: #7f1d1d; color: #fecaca; border-radius: 4px; font-family: monospace; font-size: 11px; }
-    .scan-box { background: #fff; padding: 6px; border-radius: 8px; border: 2px solid #10b981; text-align: center; min-width: 74px; }
-    .scan-label { color: #06281e; font-size: 8.5px; font-weight: 800; margin-top: 2px; text-transform: uppercase; }
-    .summary-banner { background: #0d1b20; border-left: 3px solid #10b981; padding: 8px 10px; margin: 8px 0; border-radius: 5px; font-size: 12.5px; }
-    .breakdown-box { background: #0d1b20; border-radius: 8px; padding: 8px 10px; margin: 8px 0; font-size: 12px; }
-    .breakdown-row { display: flex; justify-content: space-between; margin-bottom: 3px; }
-    .breakdown-row.total-row { border-top: 1px dashed #1e3a3a; padding-top: 5px; margin-top: 4px; font-weight: 700; color: #34d399; }
-    .addr-tag { font-family: monospace; font-size: 11px; color: #93c5fd; word-break: break-all; margin-bottom: 4px; }
-    .copy-btn { background: #1e2d47; color: #e2e8f0; border: 1px solid #334155; border-radius: 6px; padding: 4px 8px; font-size: 11px; margin-top: 4px; cursor: pointer; }
-    .gas-text { font-size: 11.5px; color: #94a3b8; margin-top: 5px; }
-    .barcode-strip { margin-top: 10px; background: #fff; border-radius: 6px; padding: 5px; border: 1px solid #10b98166; }
-    .barcode-bars { height: 28px; background: repeating-linear-gradient(90deg, #0f172a, #0f172a 2px, #fff 2px, #fff 5px, #0f172a 5px, #0f172a 6px, #fff 6px, #fff 9px); }
-    .thankyou-badge { margin-top: 10px; padding: 9px; background: #0d2b24; border: 1px solid #10b98144; border-radius: 8px; text-align: center; font-size: 12.5px; font-weight: 600; color: #6ee7b7; }
-    .thankyou-sub { display: block; font-size: 11px; font-weight: 400; color: #a7f3d0; }
-    .promo { margin-top: 8px; padding-top: 7px; border-top: 1px dashed #1e3a3a; text-align: center; font-size: 11px; color: #93c5fd; }
-    .promo strong { color: #34d399; }
-    .action-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 12px; }
-    .hidden { display: none !important; }
-    @media print {
-      body { background: #fff; color: #000; padding: 0; }
-      .no-print { display: none !important; }
-      .card { border: none; max-width: 100%; }
-    }
+    body { font-family: sans-serif; background: #0b1120; color: #fff; padding: 16px; }
+    .card { max-width: 420px; margin: auto; background: #111827; padding: 18px; border-radius: 12px; border: 1px solid #1f2937; }
+    input { width: 100%; padding: 10px; margin: 6px 0 12px; background: #1e293b; border: 1px solid #334155; color: #fff; border-radius: 8px; box-sizing: border-box; }
+    button { width: 100%; padding: 12px; background: #10b981; color: #064e3b; font-weight: bold; border: none; border-radius: 8px; cursor: pointer; font-size: 15px; }
+    .receipt { margin-top: 16px; padding: 14px; background: #122429; border: 1px solid #10b981; border-radius: 10px; display: none; }
+    .hash { font-family: monospace; font-size: 11px; color: #93c5fd; word-break: break-all; }
   </style>
 </head>
 <body>
-  <div class="container">
-    <div class="demo-bar no-print">
-      <span>🧪 Interactive Demo Mode</span>
-      <button type="button" class="btn-demo" onclick="fillDemo()">Auto-Fill Sample</button>
+  <div class="card">
+    <h2>ME-Receipt (Demo)</h2>
+    <label>Customer Name</label>
+    <input id="cust" value="Erick Otieno">
+    <label>Item</label>
+    <input id="item" value="Lunch & Juice">
+    <label>Amount (MECS)</label>
+    <input id="amt" type="number" value="10">
+    <button onclick="pay()">🔒 Pay & Lock in Escrow</button>
+
+    <div id="receipt" class="receipt">
+      <h3 style="color:#34d399; margin-top:0;">✅ Verified ME-Receipt</h3>
+      <p id="recSummary"></p>
+      <p><strong>Receipt #:</strong> <span id="recId"></span></p>
+      <p><strong>Time:</strong> <span id="recTime"></span></p>
+      <p><strong>Tx Hash:</strong><br><span id="recHash" class="hash"></span></p>
     </div>
+  </div>
 
-    <div class="card">
-      <h1>ME-Receipt (ME Network)</h1>
-      <p class="subtitle"><strong>Correction / Refund Mode:</strong> Linked to original on-chain receipts (immutable adjustment record).</p>
-
-      <div class="no-print">
-        <div class="form-group">
-          <label>Customer Name</label>
-          <input type="text" id="custName" value="Erick Otieno" oninput="calc()" />
-        </div>
-        <div class="form-group">
-          <label>Customer ME Wallet Address</label>
-          <input type="text" id="custWallet" placeholder="me1x9k2a7m8p4q1w5e3r..." />
-        </div>
-        <div class="form-group">
-          <label>Vendor / Freelancer Name</label>
-          <input type="text" id="vendorName" value="Campus Kiosk" oninput="calc()" />
-        </div>
-        <div class="form-group">
-          <label>Vendor ME Wallet Address</label>
-          <input type="text" id="vendorWallet" value="me1kiosk92x8a4m7p0q5w3e9" oninput="calc()" />
-        </div>
-        <div class="form-group">
-          <label>Item / Service Description</label>
-          <input type="text" id="itemDesc" value="Lunch & Juice" oninput="calc()" />
-        </div>
-        <div class="form-group">
-          <label>Amount</label>
-          <input type="number" id="amount" value="10" min="0" step="0.01" oninput="calc()" />
-        </div>
-        <div class="form-group">
-          <label>Currency / Token</label>
-          <select id="currency" onchange="calc()">
-            <option value="MECS">MECS</option>
-            <option value="USDT">USDT (ME-20)</option>
-            <option value="KESm">KESm (Stable)</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label>Optional Tip (Direct to Vendor)</label>
-          <div class="tip-grid">
-            <button type="button" class="tip-btn active" onclick="setTip(0, this)">No Tip</button>
-            <button type="button" class="tip-btn" onclick="setTip(5, this)">5%</button>
-            <button type="button" class="tip-btn" onclick="setTip(10, this)">10%</button>
-            <button type="button" class="tip-btn" onclick="setTip(15, this)">15%</button>
-          </div>
-        </div>
-
-        <div class="escrow-box">
-          <span>Total Escrow Lock:</span>
-          <span id="escrowDisplay">10.00 MECS</span>
-        </div>
-
-        <button type="button" id="payBtn" class="btn-primary" onclick="payLock()">🔒 Pay &amp; Lock in Escrow</button>
-        <button type="button" class="btn-secondary" onclick="refundMode()">↩️ Cancel / Issue Refund Mode</button>
-      </div>
-
-      <div id="statusBanner" class="status-banner locked">⏳ Ready for Demo Payment</div>
-
-      <div id="receiptBox" class="receipt-box">
-        <div class="receipt-top">
-          <div>
-            <div id="recTitle" class="verified-title">On-Chain ME-Receipt</div>
-            <div class="meta-num">
-              <div>Receipt <span id="recNum" class="receipt-no">#ME-000000</span></div>
-              <div>SN: <span id="snNum" class="serial-no">ME-SN-0000</span></div>
-              <div>Verify ID: <span id="verId" class="verify-id">VER-0000</span></div>
-              <div id="refTag" class="ref-tag hidden">REF: #ME-000000</div>
-            </div>
-          </div>
-          <div class="scan-box">
-            <svg width="46" height="46" viewBox="0 0 24 24" fill="#06281e">
-              <path d="M3 3h8v8H3V3zm2 2v4h4V5H5zm8-2h8v8h-8V3zm2 2v4h4V5h-4zM3 13h8v8H3v-8zm2 2v4h4v-4H5zm10 0h2v2h-2v-2zm4 0h2v2h-2v-2zm-4 4h2v2h-2v-2zm4 0h2v2h-2v-2zm-2-2h2v2h-2v-2z"/>
-            </svg>
-            <div class="scan-label">Scan Verify</div>
-          </div>
-        </div>
-
-        <div id="summaryText" class="summary-banner">
+  <script>
+    function pay() {
+      const cust = document.getElementById("cust").value;
+      const item = document.getElementById("item").value;
+      const amt = document.getElementById("amt").value;
+      document.getElementById("recSummary").textContent = cust + " paid " + amt + " MECS for " + item;
+      document.getElementById("recId").textContent = "ME-" + Math.floor(100000 + Math.random() * 900000);
+      document.getElementById("recTime").textContent = new Date().toLocaleString();
+      document.getElementById("recHash").textContent = "0x" + Math.random().toString(16).substring(2) + Math.random().toString(16).substring(2);
+      document.getElementById("receipt").style.display = "block";
+    }
+  </script>
+</body>
+</html>
