@@ -24,8 +24,9 @@
   .st.rfd{background:#3b171d;color:#fecaca}
   .meta{background:#0d1b20;padding:7px 9px;border-radius:6px;border-left:3px solid #fbbf24;margin-bottom:8px;font-family:monospace;font-size:11.5px}
   .mono{font-family:monospace;font-size:10.5px;color:#93c5fd;word-break:break-all}
-  .hand{background:#064e3b;border:1px solid #10b98188;color:#a7f3d0;padding:7px;border-radius:7px;margin-top:8px;font-size:11.5px;font-weight:bold;text-align:center}
-  .thx{margin-top:8px;padding:8px;background:#0d2b24;border:1px dashed #10b98188;border-radius:7px;text-align:center;font-size:11px;color:#cbd5e1}
+  .hand{display:flex;align-items:center;justify-content:center;gap:7px;background:#064e3b;border:1px solid #10b98188;color:#a7f3d0;padding:8px;border-radius:7px;margin-top:8px;font-size:12px;font-weight:bold;text-align:center}
+  .hand i{font-style:normal;font-size:18px}
+  .thx{margin-top:8px;padding:9px;background:#0d2b24;border:1px dashed #10b98188;border-radius:7px;text-align:center;font-size:11.5px;color:#cbd5e1}
   .thx b{display:block;color:#6ee7b7;font-size:12px;margin-bottom:2px}
   .scan{margin-top:10px;padding:8px;background:#f8fafc;color:#0f172a;border-radius:7px;text-align:center}
   .scan svg{width:100%;height:42px;display:block}
@@ -73,10 +74,10 @@
     <div class="mono"><b>To:</b> <span id="ov"></span></div>
     <div><b>Time:</b> <span id="tm"></span></div>
     <div class="mono"><b>Tx Hash:</b> <span id="hx"></span></div>
-    <div id="hd" class="hand">&#129309; Equal Escrow Terms - Both Parties Agreed</div>
+    <div class="hand"><i>&#129309;</i><span id="hd">Equal Escrow Terms - Both Parties Agreed</span></div>
     <div class="thx"><b id="tt"></b><span id="ts"></span></div>
     <div class="scan">
-      <div style="font-size:9px;font-weight:bold;color:#475569">UNIQUE BARCODE &amp; KENYA ID MRZ SCAN</div>
+      <div style="font-size:9px;font-weight:bold;color:#475569">UNIQUE CODE &amp; MIRZ SCAN</div>
       <svg id="bsvg" xmlns="http://w3.org" preserveAspectRatio="none"></svg>
       <div id="btxt" style="font-family:monospace;font-size:10px;font-weight:bold"></div>
       <div id="mrz" class="mrz"></div>
@@ -106,7 +107,7 @@
     var d=s.replace(/\D/g,""),sm=0;for(var i=0;i<d.length;i++)sm+=+d[i];var cd=sm%10,n=new Date();
     var dt=String(n.getFullYear()).slice(-2)+String(n.getMonth()+1).padStart(2,"0")+String(n.getDate()).padStart(2,"0");
     var am=String(Math.round(t*100)).padStart(8,"0");
-    $("mrz").textContent=pad("IDKEN"+d+cd+"<<"+(rf?"REF":"ESC")+"<<<<<<<<<<")+"\n"+pad(dt+cd+u+am+"<<<<<<"+((cd+3)%10))+"\n"+pad(c.replace(/\s+/g,"<")+"<<"+v.replace(/\s+/g,"<"));
+    $("mrz").textContent=pad("IDME<"+d+cd+"<<"+(rf?"REF":"ESC")+"<<<<<<<<<<")+"\n"+pad(dt+cd+u+am+"<<<<<<"+((cd+3)%10))+"\n"+pad(c.replace(/\s+/g,"<")+"<<"+v.replace(/\s+/g,"<"));
   }
   document.querySelectorAll(".tip").forEach(function(b){
     b.onclick=function(){tip=+b.dataset.p;document.querySelectorAll(".tip").forEach(function(x){x.classList.remove("on")});b.classList.add("on")};
@@ -123,15 +124,15 @@
     $("tot").textContent=cr==="MECS"?tot.toFixed(6)+" MECS":tot.toFixed(2)+" USDT (+ "+gf.toFixed(6)+" MEC gas)";
     $("oc").textContent=$("cid").value;$("ov").textContent=$("vid").value;$("tm").textContent=new Date().toLocaleString();$("hx").textContent=hsh();
     $("hd").textContent="Equal Escrow Terms - "+cu+" & "+ve+" Agreed";
-    $("tt").textContent="Thank you, "+cu+", for using ME Network!";
-    $("ts").textContent="Shop again with "+ve+" anytime for instant, low-fee escrow protection.";
+    $("tt").textContent="Congratulations, "+cu+"! Smart choice picking ME Network!";
+    $("ts").textContent="You saved with ultra-cheap "+gf.toFixed(4)+" MEC gas fees. Shop again with "+ve+" anytime!";
     bar(sn);mrz(sn,cu,ve,tot,cr,false);$("rel").disabled=false;$("rfd").disabled=false;$("rec").style.display="block";
   };
   $("rel").onclick=function(){
     $("st").className="st rel";$("st").textContent="Delivery Confirmed - Funds Released";
     $("hd").textContent="Both Parties Satisfied - "+cu+" & "+ve+" Verified";
-    $("tt").textContent="We appreciate your business on ME Network, "+cu+"!";
-    $("ts").textContent="Come shop again at "+ve+" anytime!";
+    $("tt").textContent="Congratulations, "+cu+"! Enjoy cheap, fast payments on ME Network!";
+    $("ts").textContent="Thank you for shopping with "+ve+" - come back and shop again anytime!";
     $("rel").disabled=true;$("rfd").disabled=true;
   };
   $("rfd").onclick=function(){
@@ -139,8 +140,8 @@
     var r="#ME-REF-"+Math.floor(1e3+Math.random()*9e3);$("rid").textContent=r;$("rf").textContent="Original: "+oid;$("rf").style.display="block";
     $("gf").textContent=gf.toFixed(6)+" MEC + 0.000100 MEC (refund)";$("tm").textContent=new Date().toLocaleString();$("hx").textContent=hsh();
     $("hd").textContent="Mutual Refund Resolution - "+cu+" & "+ve+" Agreed";
-    $("tt").textContent="Thank you for trusting ME Network, "+cu+"!";
-    $("ts").textContent="Your funds are safe. Feel free to shop again with "+ve+" anytime!";
+    $("tt").textContent="Congratulations, "+cu+"! Your funds are safely refunded on ME Network!";
+    $("ts").textContent="Still the cheapest network around - feel free to shop again with "+ve+" anytime!";
     bar(r.slice(1));mrz(sn,cu,ve,tot,cr,true);$("rel").disabled=true;$("rfd").disabled=true;
   };
   $("rst").onclick=function(){$("rec").style.display="none"};
