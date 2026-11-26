@@ -1,142 +1,3 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>ME-Receipt (ME Network)</title>
-  <script src="https://cloudflare.com"></script>
-  <script src="https://jsdelivr.net"></script>
-  <style>
-    * { box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
-    body {
-      margin: 0;
-      padding: 20px;
-      background-color: #0b111e;
-      color: #ffffff;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      min-height: 100vh;
-    }
-    .card {
-      background-color: #131c2e;
-      border: 1px solid #1e2d47;
-      border-radius: 16px;
-      padding: 24px;
-      width: 100%;
-      max-width: 400px;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
-    }
-    .header {
-      font-size: 22px;
-      font-weight: 700;
-      margin-bottom: 18px;
-    }
-    .header span {
-      font-size: 13px;
-      font-weight: 500;
-      color: #10b981;
-    }
-    .field-group { margin-bottom: 12px; }
-    label {
-      display: block;
-      font-size: 12px;
-      color: #94a3b8;
-      margin-bottom: 4px;
-    }
-    input, select {
-      width: 100%;
-      padding: 11px 13px;
-      background-color: #1a253b;
-      border: 1px solid #283754;
-      border-radius: 10px;
-      color: #ffffff;
-      font-size: 14px;
-      outline: none;
-    }
-    input:focus, select:focus { border-color: #10b981; }
-    .row {
-      display: flex;
-      gap: 10px;
-    }
-    .row .field-group { flex: 1; }
-    .tip-presets {
-      display: flex;
-      gap: 6px;
-      margin-bottom: 8px;
-    }
-    .tip-chip {
-      flex: 1;
-      padding: 7px 4px;
-      background-color: #1a253b;
-      border: 1px solid #283754;
-      border-radius: 8px;
-      color: #cbd5e1;
-      font-size: 12px;
-      font-weight: 600;
-      cursor: pointer;
-      text-align: center;
-      user-select: none;
-    }
-    .tip-chip.active {
-      background-color: #064e3b;
-      border-color: #10b981;
-      color: #6ee7b7;
-    }
-    .total-preview {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      background-color: #0f172a;
-      border: 1px solid #1e293b;
-      border-radius: 10px;
-      padding: 10px 13px;
-      margin-top: 6px;
-      font-size: 13px;
-      color: #94a3b8;
-    }
-    .total-preview strong {
-      color: #34d399;
-      font-size: 15px;
-    }
-    .warning-note {
-      background-color: #291d12;
-      border: 1px solid #f59e0b66;
-      color: #fcd34d;
-      font-size: 11.5px;
-      padding: 8px 10px;
-      border-radius: 8px;
-      margin-top: 6px;
-      line-height: 1.4;
-    }
-    .btn {
-      width: 100%;
-      padding: 14px;
-      margin-top: 10px;
-      background-color: #10b981;
-      color: #06281e;
-      font-size: 16px;
-      font-weight: 700;
-      border: none;
-      border-radius: 10px;
-      cursor: pointer;
-    }
-    .btn:disabled {
-      opacity: 0.65;
-      cursor: not-allowed;
-    }
-    .btn:active:not(:disabled) { opacity: 0.9; }
-    .btn-release {
-      width: 100%;
-      padding: 13px;
-      margin-top: 8px;
-      background-color: #38bdf8;
-      color: #082f49;
-      font-size: 15px;
-      font-weight: 700;
-      border: none;
-      border-radius: 10px;
-      cursor: pointer;
     }
     .btn-secondary {
       width: 100%;
@@ -267,6 +128,10 @@
       flex-shrink: 0;
       min-width: 86px;
     }
+    .scan-box img, .scan-box canvas {
+      margin: 0 auto;
+      display: block;
+    }
     .scan-label {
       color: #06281e;
       font-size: 9px;
@@ -308,8 +173,9 @@
     }
     .addr-tag {
       font-family: monospace;
-      font-size: 12.5px;
+      font-size: 12px;
       color: #93c5fd;
+      word-break: break-all;
     }
     .divider {
       border: 0;
@@ -402,5 +268,247 @@
 
       <div class="field-group">
         <label>Customer ME Wallet Address</label>
-        <input type="text" id="customer-addr" placeholder="me1..." value="me1nnzq78vqdq3mrg0zpsvyf3a3xk9fzst04vx0c9" />
+        <div class="field-group">
+        <label>Vendor / Freelancer Name</label>
+        <input type="text" id="vendor" placeholder="e.g., Campus Kiosk" value="Campus Kiosk" />
       </div>
+
+      <div class="field-group">
+        <label>Vendor ME Wallet Address</label>
+        <input type="text" id="vendor-addr" placeholder="me1..." value="me1kiosk92x8a4m7p0q5w3e9r2t6y8u1i4o7p2a9s" />
+      </div>
+
+      <div class="field-group">
+        <label>Item / Service Description</label>
+        <input type="text" id="item" placeholder="e.g., Lunch & Juice" value="Lunch & Juice" />
+      </div>
+
+      <div class="row">
+        <div class="field-group">
+          <label>Amount</label>
+          <input type="number" id="amount" placeholder="10" value="10" step="any" min="0.01" oninput="updateTotalPreview()" />
+        </div>
+        <div class="field-group">
+          <label>Currency / Token</label>
+          <select id="currency" onchange="updateTotalPreview()">
+            <option value="MECS">MECS</option>
+            <option value="USDT">USDT</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="field-group" id="tip-section">
+        <label>Optional Tip (Direct to Vendor)</label>
+        <div class="tip-presets">
+          <div class="tip-chip active" data-pct="0" onclick="selectTipPct(0, this)">No Tip</div>
+          <div class="tip-chip" data-pct="5" onclick="selectTipPct(5, this)">5%</div>
+          <div class="tip-chip" data-pct="10" onclick="selectTipPct(10, this)">10%</div>
+          <div class="tip-chip" data-pct="15" onclick="selectTipPct(15, this)">15%</div>
+        </div>
+        <input type="number" id="tip-amount" placeholder="Custom tip amount (0)" value="0" step="any" min="0" oninput="onManualTipInput()" />
+      </div>
+
+      <div class="total-preview">
+        <span>Total Escrow Lock:</span>
+        <strong id="total-display">10.00 MECS</strong>
+      </div>
+
+      <button type="button" class="btn" id="pay-lock-btn" onclick="payAndLock()">🔒 Pay & Lock</button>
+      <button type="button" class="btn-outline hidden" id="cancel-refund-btn" onclick="cancelRefund()">Cancel Refund Mode</button>
+    </div>
+
+    <!-- Receipt Display View -->
+    <div id="receipt-view" class="hidden">
+      <div class="receipt-box" id="receipt-box">
+        <div class="status-banner locked-status" id="status-banner">
+          <span class="lock-badge-icon" id="status-icon">🔒</span>
+          <span id="status-text">Funds Locked in ME Escrow</span>
+        </div>
+
+        <div class="receipt-top">
+          <div>
+            <div class="verified-title" id="receipt-title">On-Chain ME-Receipt</div>
+            <div class="meta-num">
+              <div class="receipt-no" id="r-number">Receipt #ME-000000</div>
+              <div class="serial-no" id="r-serial">SN: ME-SN-0000</div>
+              <div class="verify-id" id="r-verify">Verify ID: VER-0000</div>
+            </div>
+            <div id="r-ref-badge" class="ref-tag hidden">Ref: #ME-000000</div>
+          </div>
+
+          <div class="scan-box" onclick="verifyReceiptAlert()" title="Tap to verify on ME Network">
+            <div id="qrcode"></div>
+            <div class="scan-label">Scan Verify</div>
+          </div>
+        </div>
+
+        <div class="summary-banner" id="r-summary"></div>
+
+        <div class="breakdown-box">
+          <div class="breakdown-row">
+            <span>Subtotal:</span>
+            <span id="r-subtotal">0.00 MECS</span>
+          </div>
+          <div class="breakdown-row">
+            <span>Vendor Tip:</span>
+            <span id="r-tip">0.00 MECS</span>
+          </div>
+          <div class="breakdown-row total-row">
+            <span>Total Paid:</span>
+            <span id="r-total">0.00 MECS</span>
+          </div>
+        </div>
+
+        <div style="font-size: 12.5px;">
+          <div><strong>From:</strong> <span id="r-customer"></span></div>
+          <div class="addr-tag" id="r-customer-addr"></div>
+          <div style="margin-top: 6px;"><strong>To:</strong> <span id="r-vendor"></span></div>
+          <div class="addr-tag" id="r-vendor-addr"></div>
+          <div style="margin-top: 6px;"><strong>Timestamp:</strong> <span id="r-time"></span></div>
+        </div>
+
+        <hr class="divider" />
+
+        <div style="font-size: 12px;">
+          <div style="color: #94a3b8;">ME Network Tx Hash:</div>
+          <div class="addr-tag" id="r-txhash"></div>
+          <button type="button" class="copy-btn no-print" id="copy-hash-btn" onclick="copyTxHash()">📋 Copy Tx Hash</button>
+          <div class="gas-text" id="r-gas">Network Fee: 0.00012 MECS (Confirmed)</div>
+        </div>
+
+        <div class="barcode-strip">
+          <svg id="barcode"></svg>
+        </div>
+
+        <div class="thankyou-badge">
+          Thank you for transacting with ME-Receipt!
+          <span class="thankyou-sub">Cryptographically verifiable proof of payment</span>
+        </div>
+
+        <div class="me-network-promo">
+          Powered by <strong>Meta Earth (ME Network)</strong> • Decentralized Trust
+        </div>
+      </div>
+
+      <div class="no-print">
+        <button type="button" class="btn-release" id="release-btn" onclick="releaseFunds()">✅ Confirm Delivery & Release Funds</button>
+        <button type="button" class="btn-secondary" id="refund-btn" onclick="startRefundMode()">↩️ Issue Correction / Refund Receipt</button>
+        <button type="button" class="btn-outline" onclick="window.print()">🖨️ Print / Save Receipt</button>
+        <button type="button" class="btn-outline" onclick="resetForm()">➕ New Payment</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let currentReceipt = null;
+    let refundTargetNumber = null;
+
+    function formatAmount(val, currency) {
+      const num = parseFloat(val) || 0;
+      return `${num.toFixed(2)} ${currency}`;
+    }
+
+    function selectTipPct(pct, el) {
+      document.querySelectorAll('.tip-chip').forEach(c => c.classList.remove('active'));
+      el.classList.add('active');
+      const base = parseFloat(document.getElementById('amount').value) || 0;
+      const tipVal = base * (pct / 100);
+      document.getElementById('tip-amount').value = pct === 0 ? 0 : tipVal.toFixed(2);
+      updateTotalPreview();
+    }
+
+    function onManualTipInput() {
+      document.querySelectorAll('.tip-chip').forEach(c => c.classList.remove('active'));
+      updateTotalPreview();
+    }
+
+    function updateTotalPreview() {
+      const base = parseFloat(document.getElementById('amount').value) || 0;
+      const tip = refundTargetNumber ? 0 : (parseFloat(document.getElementById('tip-amount').value) || 0);
+      const currency = document.getElementById('currency').value;
+      const total = base + tip;
+      document.getElementById('total-display').textContent = formatAmount(total, currency);
+    }
+
+    function randomHex(len) {
+      const chars = '0123456789abcdef';
+      let out = '';
+      for (let i = 0; i < len; i++) {
+        out += chars[Math.floor(Math.random() * chars.length)];
+      }
+      return out;
+    }
+
+    function generateReceiptIdentifiers() {
+      const randNum = Math.floor(100000 + Math.random() * 900000);
+      const serialRand = Math.floor(1000 + Math.random() * 9000);
+      const verifyRand = Math.random().toString(36).substring(2, 8).toUpperCase();
+      return {
+        receiptNo: `ME-${randNum}`,
+        serialNo: `ME-SN-${new Date().getFullYear()}-${serialRand}`,
+        verifyId: `VER-${verifyRand}`,
+        txHash: `0x${randomHex(64)}`
+      };
+    }
+
+    function payAndLock() {
+      const customer = document.getElementById('customer').value.trim();
+      const customerAddr = document.getElementById('customer-addr').value.trim();
+      const vendor = document.getElementById('vendor').value.trim();
+      const vendorAddr = document.getElementById('vendor-addr').value.trim();
+      const item = document.getElementById('item').value.trim();
+      const baseAmount = parseFloat(document.getElementById('amount').value);
+      const tipAmount = refundTargetNumber ? 0 : (parseFloat(document.getElementById('tip-amount').value) || 0);
+      const currency = document.getElementById('currency').value;
+
+      if (!customer || !customerAddr || !vendor || !vendorAddr || !item) {
+        alert('Please fill in all customer, vendor, wallet address, and item fields.');
+        return;
+      }
+      if (isNaN(baseAmount) || baseAmount <= 0) {
+        alert('Please enter a valid amount greater than 0.');
+        return;
+      }
+
+      const btn = document.getElementById('pay-lock-btn');
+      btn.disabled = true;
+      btn.textContent = '⏳ Broadcasting to ME Network...';
+
+      setTimeout(() => {
+        const ids = generateReceiptIdentifiers();
+        const totalAmount = baseAmount + tipAmount;
+        const isRefund = Boolean(refundTargetNumber);
+
+        currentReceipt = {
+          ...ids,
+          customer,
+          customerAddr,
+          vendor,
+          vendorAddr,
+          item,
+          baseAmount,
+          tipAmount,
+          totalAmount,
+          currency,
+          timestamp: new Date().toLocaleString(),
+          status: isRefund ? 'REFUNDED' : 'LOCKED',
+          refTarget: refundTargetNumber
+        };
+
+        renderReceipt(currentReceipt);
+
+        btn.disabled = false;
+        btn.textContent = isRefund ? '↩️ Submit Adjustment Receipt' : '🔒 Pay & Lock';
+
+        document.getElementById('checkout-view').classList.add('hidden');
+        document.getElementById('receipt-view').classList.remove('hidden');
+      }, 600);
+    }
+
+    function renderReceipt(data) {
+      const box = document.getElementById('receipt-box');
+      const banner = document.getElementById('status-banner');
+      const statusIcon = document.getElementById('status-icon');
+      const statusText = document.getElementById('status-text');
+      const title = document.getElementById('receipt-title');
+      const refBadge = document.getElementById('r-ref-badge');
