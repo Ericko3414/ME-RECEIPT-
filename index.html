@@ -9,11 +9,9 @@
   .card { max-width: 420px; margin: auto; background: #111827; padding: 16px; border-radius: 12px; border: 1px solid #1f2937; }
   label { font-size: 12px; color: #cbd5e1; }
   input, select { width: 100%; padding: 9px; margin: 4px 0 10px; background: #1e293b; border: 1px solid #334155; color: #fff; border-radius: 8px; box-sizing: border-box; }
-  .tips { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; margin: 4px 0 10px; }
+  .tips { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; margin: 4px 0 12px; }
   .tip-btn { padding: 8px; background: #1e293b; border: 1px solid #334155; color: #cbd5e1; border-radius: 6px; cursor: pointer; font-weight: bold; }
   .tip-btn.active { background: #064e3b; border-color: #10b981; color: #6ee7b7; }
-  .gas-preview { display: flex; justify-content: space-between; align-items: center; background: #0f172a; border: 1px solid #1e293b; padding: 8px 10px; border-radius: 7px; font-size: 12px; color: #94a3b8; margin-bottom: 12px; }
-  .gas-preview span:last-child { color: #fbbf24; font-family: monospace; font-weight: bold; }
   .pay-btn { width: 100%; padding: 12px; background: #10b981; color: #064e3b; font-weight: bold; border: none; border-radius: 8px; cursor: pointer; font-size: 15px; }
   .receipt { margin-top: 14px; padding: 14px; background: #122429; border: 1px solid #10b981; border-radius: 10px; display: none; font-size: 13px; line-height: 1.55; }
   .receipt.refunded { background: #26161a; border-color: #f87171; }
@@ -24,7 +22,6 @@
   .sn { color: #fbbf24; font-weight: bold; }
   .ref-tag { display: none; margin-top: 4px; padding: 2px 6px; background: #7f1d1d; color: #fecaca; border-radius: 4px; font-size: 11px; }
   .mono { font-family: monospace; font-size: 11px; color: #93c5fd; word-break: break-all; }
-  .fee-row { font-size: 12px; color: #fbbf24; font-family: monospace; }
 
   /* Barcode & Kenya ID MRZ Scan Styling */
   .scan-section { margin-top: 12px; padding: 10px; background: #f8fafc; color: #0f172a; border-radius: 8px; border: 1px solid #94a3b8; }
@@ -57,8 +54,8 @@
   <input id="item" value="Lunch & Juice">
   <label>Amount & Currency</label>
   <div style="display:flex; gap:8px;">
-    <input id="amt" type="number" value="10" min="0.01" step="0.01" style="flex:2;" oninput="updateGasPreview()">
-    <select id="cur" style="flex:1;" onchange="updateGasPreview()">
+    <input id="amt" type="number" value="10" min="0.01" step="0.01" style="flex:2;">
+    <select id="cur" style="flex:1;">
       <option value="MECS">MECS</option>
       <option value="USDT">USDT</option>
     </select>
@@ -70,13 +67,6 @@
     <button type="button" class="tip-btn" onclick="setTip(10, this)">10%</button>
     <button type="button" class="tip-btn" onclick="setTip(15, this)">15%</button>
   </div>
-
-  <!-- Live Dynamic Gas Fee Estimate -->
-  <div class="gas-preview">
-    <span>⛽ Est. ME Network Gas Fee:</span>
-    <span id="gasPreviewVal">0.000200 MEC</span>
-  </div>
-
   <button class="pay-btn" onclick="pay()">🔒 Pay & Lock in Escrow</button>
 
   <div id="receipt" class="receipt">
@@ -90,9 +80,8 @@
     <div id="recSummary"></div>
     <hr style="border-color:#1e3a3a;">
     <div><strong>Subtotal:</strong> <span id="recSub"></span> | <strong>Tip:</strong> <span id="recTip"></span></div>
-    <div class="fee-row"><strong>Network Gas Fee:</strong> <span id="recGas"></span></div>
-    <div style="color:#34d399; font-weight:bold; margin-top:2px;">Total Paid: <span id="recTot"></span></div>
-    <div class="mono" style="margin-top:4px;"><strong>From:</strong> <span id="outCustId"></span></div>
+    <div style="color:#34d399; font-weight:bold;">Total Paid: <span id="recTot"></span></div>
+    <div class="mono"><strong>From:</strong> <span id="outCustId"></span></div>
     <div class="mono"><strong>To:</strong> <span id="outVendId"></span></div>
     <div><strong>Time:</strong> <span id="recTime"></span></div>
     <div class="mono"><strong>Tx Hash:</strong> <span id="recHash"></span></div>
@@ -124,20 +113,6 @@
   let currentVend = "";
   let currentTot = 0;
   let currentCur = "MECS";
-  let currentGas = 0.0001;
-
-  // Base fee ~0.0001 MEC + 0.001% scaling based on payment amount
-  function calculateGasFee(amount) {
-    const cleanAmt = Math.max(0, parseFloat(amount) || 0);
-    const dynamicFee = 0.0001 + (cleanAmt * 0.00001);
-    return Number(dynamicFee.toFixed(6));
-  }
-
-  function updateGasPreview() {
-    const amt = parseFloat(document.getElementById("amt").value) || 0;
-    const fee = calculateGasFee(amt);
-    document.getElementById("gasPreviewVal").textContent = fee.toFixed(6) + " MEC";
-  }
 
   function setTip(p, btn) {
     tipPct = p;
@@ -149,15 +124,18 @@
     return "0x" + Math.random().toString(16).substring(2) + Math.random().toString(16).substring(2);
   }
 
+  // Generates a deterministic, unique 1D SVG barcode from the serial string
   function renderBarcode(code) {
     const svg = document.getElementById("barcodeSvg");
     const clean = code.replace(/[^A-Z0-9]/gi, "").toUpperCase();
+    // Start guard pattern
     let pattern = "1010110";
     for (let i = 0; i < clean.length; i++) {
       const charCode = clean.charCodeAt(i);
       const bits = ((charCode * 37 + i * 13) % 256).toString(2).padStart(8, "0");
       pattern += bits + "01";
     }
+    // End guard pattern
     pattern += "110101";
 
     svg.setAttribute("viewBox", `0 0 ${pattern.length * 2} 50`);
@@ -171,6 +149,7 @@
     document.getElementById("barcodeText").textContent = code;
   }
 
+  // Formats a 3-line x 30-char TD1/Kenya ID style Machine Readable Zone (MRZ)
   function renderKenyaIdMrz(sn, cust, vend, tot, cur, isRefund) {
     const pad30 = (str) => str.toUpperCase().replace(/[^A-Z0-9<]/g, "<").padEnd(30, "<").slice(0, 30);
 
@@ -178,9 +157,28 @@
     const checkDigit = snDigits.split("").reduce((a, b) => a + parseInt(b, 10), 0) % 10;
     const statusFlag = isRefund ? "REF" : "ESC";
 
+    // Line 1: Document type (ID) + Country/System (KEN) + Serial Number + Check digit
     const line1 = pad30(`IDKEN${snDigits}${checkDigit}<<${statusFlag}<<<<<<<<<<`);
 
+    // Line 2: Date (YYMMDD) + Check + Amount code + Currency + Check digit
     const now = new Date();
     const yymmdd = String(now.getFullYear()).slice(-2) +
                    String(now.getMonth() + 1).padStart(2, "0") +
                    String(now.getDate()).padStart(2, "0");
+    const amtCode = Math.round(tot * 100).toString().padStart(8, "0");
+    const line2 = pad30(`${yymmdd}${checkDigit}${cur}${amtCode}<<<<<<${(checkDigit + 3) % 10}`);
+
+    // Line 3: Customer Name << Vendor Name separated by filler chevrons
+    const cleanCust = cust.trim().toUpperCase().replace(/\s+/g, "<").replace(/[^A-Z<]/g, "");
+    const cleanVend = vend.trim().toUpperCase().replace(/\s+/g, "<").replace(/[^A-Z<]/g, "");
+    const line3 = pad30(`${cleanCust}<<${cleanVend}`);
+
+    document.getElementById("mrzScan").textContent = `${line1}\n${line2}\n${line3}`;
+  }
+
+  function pay() {
+    currentCust = document.getElementById("cust").value || "Customer";
+    currentVend = document.getElementById("vendor").value || "Vendor";
+    const item = document.getElementById("item").value || "Item";
+    currentCur = document.getElementById("cur").value;
+    const amt = Math.max(0.01, parseFloat(document.getElementById("amt").value) || 0);
