@@ -14,9 +14,19 @@
     .tip-btn.active { background: #064e3b; border-color: #10b981; color: #6ee7b7; }
     .pay-btn { width: 100%; padding: 12px; background: #10b981; color: #064e3b; font-weight: bold; border: none; border-radius: 8px; cursor: pointer; font-size: 15px; }
     .receipt { margin-top: 14px; padding: 14px; background: #122429; border: 1px solid #10b981; border-radius: 10px; display: none; font-size: 13px; line-height: 1.55; }
+    .receipt.refunded { background: #26161a; border-color: #f87171; }
+    .status { padding: 6px 10px; border-radius: 6px; font-weight: bold; font-size: 12px; text-align: center; margin-bottom: 10px; background: #2b2110; color: #fde68a; border: 1px solid #f59e0b66; }
+    .status.released { background: #0f253e; color: #7dd3fc; border-color: #38bdf866; }
+    .status.refund { background: #3b171d; color: #fecaca; border-color: #f8717166; }
     .meta-box { background: #0d1b20; padding: 8px 10px; border-radius: 7px; border-left: 3px solid #fbbf24; margin-bottom: 10px; font-family: monospace; font-size: 12px; }
     .sn { color: #fbbf24; font-weight: bold; }
+    .ref-tag { display: none; margin-top: 4px; padding: 2px 6px; background: #7f1d1d; color: #fecaca; border-radius: 4px; font-size: 11px; }
     .mono { font-family: monospace; font-size: 11px; color: #93c5fd; word-break: break-all; }
+    .actions { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 12px; }
+    .act-btn { padding: 9px; border-radius: 7px; border: none; font-weight: bold; font-size: 12.5px; cursor: pointer; }
+    .btn-release { background: #38bdf8; color: #082f49; }
+    .btn-refund { background: #ef4444; color: #fff; }
+    .btn-reset { grid-column: span 2; background: #1e293b; color: #cbd5e1; border: 1px solid #334155; }
   </style>
 </head>
 <body>
@@ -56,10 +66,12 @@
     <button class="pay-btn" onclick="pay()">🔒 Pay & Lock in Escrow</button>
 
     <div id="receipt" class="receipt">
-      <h3 style="color:#34d399; margin:0 0 8px;">✅ Verified ME-Receipt</h3>
+      <div id="statusBadge" class="status">🔒 Funds Locked in ME Escrow</div>
+      <h3 id="recTitle" style="color:#34d399; margin:0 0 8px;">✅ Verified ME-Receipt</h3>
       <div class="meta-box">
         <div><strong>Receipt No:</strong> <span id="recId"></span></div>
         <div><strong>Serial No (SN):</strong> <span id="snId" class="sn"></span></div>
+        <div id="refTag" class="ref-tag"></div>
       </div>
       <div id="recSummary"></div>
       <hr style="border-color:#1e3a3a;">
@@ -69,16 +81,29 @@
       <div class="mono"><strong>To:</strong> <span id="outVendId"></span></div>
       <div><strong>Time:</strong> <span id="recTime"></span></div>
       <div class="mono"><strong>Tx Hash:</strong> <span id="recHash"></span></div>
+
+      <div class="actions">
+        <button type="button" class="act-btn btn-release" onclick="releaseFunds()">✅ Confirm Delivery</button>
+        <button type="button" class="act-btn btn-refund" onclick="refundReceipt()">↩️ Issue Refund</button>
+        <button type="button" class="act-btn btn-reset" onclick="resetDemo()">➕ New Payment</button>
+      </div>
     </div>
   </div>
 
   <script>
     let tipPct = 0;
+    let origRecId = "";
+
     function setTip(p, btn) {
       tipPct = p;
       document.querySelectorAll(".tip-btn").forEach(b => b.classList.remove("active"));
       btn.classList.add("active");
     }
+
+    function newHash() {
+      return "0x" + Math.random().toString(16).substring(2) + Math.random().toString(16).substring(2);
+    }
+
     function pay() {
       const cust = document.getElementById("cust").value;
       const vend = document.getElementById("vendor").value;
@@ -88,17 +113,55 @@
       const tip = amt * (tipPct / 100);
       const tot = amt + tip;
 
-      document.getElementById("recId").textContent = "#ME-" + Math.floor(100000 + Math.random() * 900000);
+      origRecId = "#ME-" + Math.floor(100000 + Math.random() * 900000);
+      const box = document.getElementById("receipt");
+      box.classList.remove("refunded");
+      document.getElementById("statusBadge").className = "status";
+      document.getElementById("statusBadge").textContent = "🔒 Funds Locked in ME Escrow";
+      document.getElementById("recTitle").style.color = "#34d399";
+      document.getElementById("recTitle").textContent = "✅ Verified ME-Receipt";
+      document.getElementById("refTag").style.display = "none";
+
+      document.getElementById("recId").textContent = origRecId;
       document.getElementById("snId").textContent = "ME-SN-2026-" + Math.floor(1000 + Math.random() * 9000);
-      document.getElementById("recSummary").innerHTML = "<strong>" + cust + "</strong> paid <strong>" + vend + "</strong> for " + item;
+      document.getElementById("recSummary").innerHTML = "<strong>" + cust + "</strong> locked payment with <strong>" + vend + "</strong> for " + item;
       document.getElementById("recSub").textContent = amt.toFixed(2) + " " + cur;
       document.getElementById("recTip").textContent = tip.toFixed(2) + " " + cur;
       document.getElementById("recTot").textContent = tot.toFixed(2) + " " + cur;
       document.getElementById("outCustId").textContent = document.getElementById("custId").value;
       document.getElementById("outVendId").textContent = document.getElementById("vendorId").value;
       document.getElementById("recTime").textContent = new Date().toLocaleString();
-      document.getElementById("recHash").textContent = "0x" + Math.random().toString(16).substring(2) + Math.random().toString(16).substring(2);
-      document.getElementById("receipt").style.display = "block";
+      document.getElementById("recHash").textContent = newHash();
+      box.style.display = "block";
+    }
+
+    function releaseFunds() {
+      const badge = document.getElementById("statusBadge");
+      badge.className = "status released";
+      badge.textContent = "✅ Delivery Confirmed — Funds Released to Vendor";
+    }
+
+    function refundReceipt() {
+      const box = document.getElementById("receipt");
+      box.classList.add("refunded");
+      const badge = document.getElementById("statusBadge");
+      badge.className = "status refund";
+      badge.textContent = "↩️ Escrow Refunded — Immutable Adjustment Record";
+
+      document.getElementById("recTitle").style.color = "#fca5a5";
+      document.getElementById("recTitle").textContent = "↩️ ME-Receipt Refund Record";
+      document.getElementById("recId").textContent = "#ME-REF-" + Math.floor(1000 + Math.random() * 9000);
+
+      const refTag = document.getElementById("refTag");
+      refTag.textContent = "Linked Original Receipt: " + origRecId;
+      refTag.style.display = "inline-block";
+
+      document.getElementById("recTime").textContent = new Date().toLocaleString();
+      document.getElementById("recHash").textContent = newHash();
+    }
+
+    function resetDemo() {
+      document.getElementById("receipt").style.display = "none";
     }
   </script>
 </body>
