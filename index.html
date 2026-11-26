@@ -5,41 +5,91 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>ME-Receipt Demo</title>
   <style>
-    body { font-family: sans-serif; background: #0b1120; color: #fff; padding: 16px; }
-    .card { max-width: 420px; margin: auto; background: #111827; padding: 18px; border-radius: 12px; border: 1px solid #1f2937; }
-    input { width: 100%; padding: 10px; margin: 6px 0 12px; background: #1e293b; border: 1px solid #334155; color: #fff; border-radius: 8px; box-sizing: border-box; }
-    button { width: 100%; padding: 12px; background: #10b981; color: #064e3b; font-weight: bold; border: none; border-radius: 8px; cursor: pointer; font-size: 15px; }
-    .receipt { margin-top: 16px; padding: 14px; background: #122429; border: 1px solid #10b981; border-radius: 10px; display: none; }
-    .hash { font-family: monospace; font-size: 11px; color: #93c5fd; word-break: break-all; }
+    body { font-family: sans-serif; background: #0b1120; color: #fff; padding: 14px; }
+    .card { max-width: 420px; margin: auto; background: #111827; padding: 16px; border-radius: 12px; border: 1px solid #1f2937; }
+    label { font-size: 12px; color: #cbd5e1; }
+    input, select { width: 100%; padding: 9px; margin: 4px 0 10px; background: #1e293b; border: 1px solid #334155; color: #fff; border-radius: 8px; box-sizing: border-box; }
+    .tips { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; margin: 4px 0 12px; }
+    .tip-btn { padding: 8px; background: #1e293b; border: 1px solid #334155; color: #cbd5e1; border-radius: 6px; cursor: pointer; font-weight: bold; }
+    .tip-btn.active { background: #064e3b; border-color: #10b981; color: #6ee7b7; }
+    .pay-btn { width: 100%; padding: 12px; background: #10b981; color: #064e3b; font-weight: bold; border: none; border-radius: 8px; cursor: pointer; font-size: 15px; }
+    .receipt { margin-top: 14px; padding: 14px; background: #122429; border: 1px solid #10b981; border-radius: 10px; display: none; font-size: 13px; line-height: 1.5; }
+    .mono { font-family: monospace; font-size: 11px; color: #93c5fd; word-break: break-all; }
   </style>
 </head>
 <body>
   <div class="card">
-    <h2>ME-Receipt (Demo)</h2>
+    <h2 style="margin-top:0;">ME-Receipt (Demo)</h2>
+
     <label>Customer Name</label>
     <input id="cust" value="Erick Otieno">
-    <label>Item</label>
+    <label>Customer ME ID / Wallet</label>
+    <input id="custId" value="me1erick84x9m2p7q0w3e5r1">
+
+    <label>Vendor Name</label>
+    <input id="vendor" value="Campus Kiosk">
+    <label>Vendor ME ID / Wallet</label>
+    <input id="vendorId" value="me1kiosk92x8a4m7p0q5w3e9">
+
+    <label>Item / Service</label>
     <input id="item" value="Lunch & Juice">
-    <label>Amount (MECS)</label>
-    <input id="amt" type="number" value="10">
-    <button onclick="pay()">🔒 Pay & Lock in Escrow</button>
+
+    <label>Amount & Currency</label>
+    <div style="display:flex; gap:8px;">
+      <input id="amt" type="number" value="10" style="flex:2;">
+      <select id="cur" style="flex:1;">
+        <option value="MECS">MECS</option>
+        <option value="USDT">USDT</option>
+      </select>
+    </div>
+
+    <label>Optional Tip</label>
+    <div class="tips">
+      <button type="button" class="tip-btn active" onclick="setTip(0, this)">0%</button>
+      <button type="button" class="tip-btn" onclick="setTip(5, this)">5%</button>
+      <button type="button" class="tip-btn" onclick="setTip(10, this)">10%</button>
+      <button type="button" class="tip-btn" onclick="setTip(15, this)">15%</button>
+    </div>
+
+    <button class="pay-btn" onclick="pay()">🔒 Pay & Lock in Escrow</button>
 
     <div id="receipt" class="receipt">
-      <h3 style="color:#34d399; margin-top:0;">✅ Verified ME-Receipt</h3>
-      <p id="recSummary"></p>
-      <p><strong>Receipt #:</strong> <span id="recId"></span></p>
-      <p><strong>Time:</strong> <span id="recTime"></span></p>
-      <p><strong>Tx Hash:</strong><br><span id="recHash" class="hash"></span></p>
+      <h3 style="color:#34d399; margin:0 0 6px;">✅ Verified ME-Receipt</h3>
+      <div id="recSummary"></div>
+      <hr style="border-color:#1e3a3a;">
+      <div><strong>Receipt #:</strong> <span id="recId"></span></div>
+      <div><strong>Subtotal:</strong> <span id="recSub"></span> | <strong>Tip:</strong> <span id="recTip"></span></div>
+      <div style="color:#34d399; font-weight:bold;">Total Paid: <span id="recTot"></span></div>
+      <div class="mono"><strong>From:</strong> <span id="outCustId"></span></div>
+      <div class="mono"><strong>To:</strong> <span id="outVendId"></span></div>
+      <div><strong>Time:</strong> <span id="recTime"></span></div>
+      <div class="mono"><strong>Tx Hash:</strong> <span id="recHash"></span></div>
     </div>
   </div>
 
   <script>
+    let tipPct = 0;
+    function setTip(p, btn) {
+      tipPct = p;
+      document.querySelectorAll(".tip-btn").forEach(b => b.classList.remove("active"));
+      btn.classList.add("active");
+    }
     function pay() {
       const cust = document.getElementById("cust").value;
+      const vend = document.getElementById("vendor").value;
       const item = document.getElementById("item").value;
-      const amt = document.getElementById("amt").value;
-      document.getElementById("recSummary").textContent = cust + " paid " + amt + " MECS for " + item;
+      const cur = document.getElementById("cur").value;
+      const amt = parseFloat(document.getElementById("amt").value) || 0;
+      const tip = amt * (tipPct / 100);
+      const tot = amt + tip;
+
+      document.getElementById("recSummary").innerHTML = "<strong>" + cust + "</strong> paid <strong>" + vend + "</strong> for " + item;
       document.getElementById("recId").textContent = "ME-" + Math.floor(100000 + Math.random() * 900000);
+      document.getElementById("recSub").textContent = amt.toFixed(2) + " " + cur;
+      document.getElementById("recTip").textContent = tip.toFixed(2) + " " + cur;
+      document.getElementById("recTot").textContent = tot.toFixed(2) + " " + cur;
+      document.getElementById("outCustId").textContent = document.getElementById("custId").value;
+      document.getElementById("outVendId").textContent = document.getElementById("vendorId").value;
       document.getElementById("recTime").textContent = new Date().toLocaleString();
       document.getElementById("recHash").textContent = "0x" + Math.random().toString(16).substring(2) + Math.random().toString(16).substring(2);
       document.getElementById("receipt").style.display = "block";
