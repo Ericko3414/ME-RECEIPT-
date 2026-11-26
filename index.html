@@ -13,7 +13,9 @@
     .tip-btn { padding: 8px; background: #1e293b; border: 1px solid #334155; color: #cbd5e1; border-radius: 6px; cursor: pointer; font-weight: bold; }
     .tip-btn.active { background: #064e3b; border-color: #10b981; color: #6ee7b7; }
     .pay-btn { width: 100%; padding: 12px; background: #10b981; color: #064e3b; font-weight: bold; border: none; border-radius: 8px; cursor: pointer; font-size: 15px; }
-    .receipt { margin-top: 14px; padding: 14px; background: #122429; border: 1px solid #10b981; border-radius: 10px; display: none; font-size: 13px; line-height: 1.5; }
+    .receipt { margin-top: 14px; padding: 14px; background: #122429; border: 1px solid #10b981; border-radius: 10px; display: none; font-size: 13px; line-height: 1.55; }
+    .meta-box { background: #0d1b20; padding: 8px 10px; border-radius: 7px; border-left: 3px solid #fbbf24; margin-bottom: 10px; font-family: monospace; font-size: 12px; }
+    .sn { color: #fbbf24; font-weight: bold; }
     .mono { font-family: monospace; font-size: 11px; color: #93c5fd; word-break: break-all; }
   </style>
 </head>
@@ -54,10 +56,13 @@
     <button class="pay-btn" onclick="pay()">🔒 Pay & Lock in Escrow</button>
 
     <div id="receipt" class="receipt">
-      <h3 style="color:#34d399; margin:0 0 6px;">✅ Verified ME-Receipt</h3>
+      <h3 style="color:#34d399; margin:0 0 8px;">✅ Verified ME-Receipt</h3>
+      <div class="meta-box">
+        <div><strong>Receipt No:</strong> <span id="recId"></span></div>
+        <div><strong>Serial No (SN):</strong> <span id="snId" class="sn"></span></div>
+      </div>
       <div id="recSummary"></div>
       <hr style="border-color:#1e3a3a;">
-      <div><strong>Receipt #:</strong> <span id="recId"></span></div>
       <div><strong>Subtotal:</strong> <span id="recSub"></span> | <strong>Tip:</strong> <span id="recTip"></span></div>
       <div style="color:#34d399; font-weight:bold;">Total Paid: <span id="recTot"></span></div>
       <div class="mono"><strong>From:</strong> <span id="outCustId"></span></div>
@@ -83,8 +88,9 @@
       const tip = amt * (tipPct / 100);
       const tot = amt + tip;
 
+      document.getElementById("recId").textContent = "#ME-" + Math.floor(100000 + Math.random() * 900000);
+      document.getElementById("snId").textContent = "ME-SN-2026-" + Math.floor(1000 + Math.random() * 9000);
       document.getElementById("recSummary").innerHTML = "<strong>" + cust + "</strong> paid <strong>" + vend + "</strong> for " + item;
-      document.getElementById("recId").textContent = "ME-" + Math.floor(100000 + Math.random() * 900000);
       document.getElementById("recSub").textContent = amt.toFixed(2) + " " + cur;
       document.getElementById("recTip").textContent = tip.toFixed(2) + " " + cur;
       document.getElementById("recTot").textContent = tot.toFixed(2) + " " + cur;
