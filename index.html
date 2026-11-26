@@ -4,6 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>ME-Receipt (ME Network)</title>
+  <!-- Working CDNs for QR Code and Barcode generation -->
   <script src="https://cloudflare.com"></script>
   <script src="https://jsdelivr.net"></script>
   <style>
@@ -60,6 +61,44 @@
       gap: 10px;
     }
     .row .field-group { flex: 1; }
+    .tip-presets {
+      display: flex;
+      gap: 6px;
+      margin-bottom: 8px;
+    }
+    .tip-chip {
+      flex: 1;
+      padding: 7px 4px;
+      background-color: #1a253b;
+      border: 1px solid #283754;
+      border-radius: 8px;
+      color: #cbd5e1;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      text-align: center;
+    }
+    .tip-chip.active {
+      background-color: #064e3b;
+      border-color: #10b981;
+      color: #6ee7b7;
+    }
+    .total-preview {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background-color: #0f172a;
+      border: 1px solid #1e293b;
+      border-radius: 10px;
+      padding: 10px 13px;
+      margin-top: 6px;
+      font-size: 13px;
+      color: #94a3b8;
+    }
+    .total-preview strong {
+      color: #34d399;
+      font-size: 15px;
+    }
     .warning-note {
       background-color: #291d12;
       border: 1px solid #f59e0b66;
@@ -245,6 +284,27 @@
       color: #e2e8f0;
       line-height: 1.45;
     }
+    .breakdown-box {
+      background-color: #0d1b20;
+      border-radius: 8px;
+      padding: 8px 11px;
+      margin: 8px 0;
+      font-size: 12.5px;
+      color: #cbd5e1;
+    }
+    .breakdown-row {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 3px;
+    }
+    .breakdown-row.total-row {
+      border-top: 1px dashed #1e3a3a;
+      padding-top: 4px;
+      margin-top: 4px;
+      margin-bottom: 0;
+      font-weight: 700;
+      color: #34d399;
+    }
     .addr-tag {
       font-family: monospace;
       font-size: 12.5px;
@@ -344,39 +404,3 @@
         <input type="text" id="customer-addr" placeholder="me1..." value="me1nnzq78vqdq3mrg0zpsvyf3a3xk9fzst04vx0c9" />
       </div>
 
-      <div class="field-group">
-        <label>Vendor / Freelancer Name</label>
-        <input type="text" id="vendor" placeholder="e.g., Campus Kiosk" value="Campus Kiosk" />
-      </div>
-
-      <div class="field-group">
-        <label>Vendor ME Wallet Address</label>
-        <input type="text" id="vendor-addr" placeholder="me1..." value="me1kiosk92x8a4m7p0q5w3e9r2t6y8u1i4o7p2a9s" />
-      </div>
-
-      <div class="field-group">
-        <label>Item / Service Description</label>
-        <input type="text" id="item" placeholder="e.g., Lunch & Juice" value="Lunch & Juice" />
-      </div>
-
-      <div class="row">
-        <div class="field-group">
-          <label>Amount</label>
-          <input type="number" id="amount" placeholder="10" value="10" step="any" min="0.01" />
-        </div>
-        <div class="field-group">
-          <label>Currency / Token</label>
-          <select id="currency">
-            <option value="MECS">MECS</option>
-            <option value="USDT">USDT</option>
-          </select>
-        </div>
-      </div>
-
-      <button type="button" class="btn" id="pay-lock-btn">🔒 Pay & Lock</button>
-      <button type="button" class="btn-outline hidden" id="cancel-refund-btn">Cancel Refund Mode</button>
-    </div>
-
-    <!-- Receipt Display View -->
-    <div id="receipt-view" class="hidden">
-      <div class="receipt-box" id="receipt-box">
