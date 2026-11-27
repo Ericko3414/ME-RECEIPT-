@@ -8,7 +8,7 @@
 
 ## Live Demo
 
-- **Web App:** [Launch ME-Receipt Live Demo](https://github.io)
+- **Web App:** (https://ericko3414.github.io/ME-RECEIPT-/)
 
 ---
 
