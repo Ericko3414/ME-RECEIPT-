@@ -1,12 +1,14 @@
 # ME-Receipt (ME Network)
 
-**ME-Receipt** is a lightweight, mobile-first escrow payment and digital receipt prototype built for the **Meta Earth (ME) Network**. It protects everyday customer-to-vendor transactions using smart escrow locking, verifiable serial tracking, unique optical scan codes, and immutable refund records—powered by ultra-low MEC network gas fees.
+> **Built for Hackathon 2026** by **The Trailblazers** (Erick Otieno) | **Track:** Consumer Products & Payments
+
+**ME-Receipt** is a lightweight, mobile-first escrow payment and digital receipt prototype built for the **Meta Earth (ME) Network**. Everyday crypto transactions often leave buyers exposed to non-delivery and sellers exposed to payment disputes. ME-Receipt solves this with smart escrow locking, verifiable serial tracking, unique optical scan codes, and immutable refund records—powered by ultra-low MEC network gas fees.
 
 ---
 
 ## Live Demo
 
-- **Web App:** 'https://ericko3414.github.io/ME-RECEIPT-/'
+- **Web App:** [Launch ME-Receipt Live Demo](https://github.io)
 
 ---
 
@@ -54,6 +56,10 @@ ME-RECEIPT-/
 
 ## Future Roadmap
 
-- Connect directly to live Meta Earth (`ME ID`) wallet signing and on-chain smart contract escrow.
-- Add QR payment link generation for instant vendor checkout scanning.
-- Support downloadable PDF/image receipt exports and local transaction history.
+- **Phase 1 — On-Chain Integration:** Connect directly to live Meta Earth (`ME ID`) wallet signing and deploy audited escrow smart contracts.
+- **Phase 2 — Instant Merchant Checkout:** Add QR payment link generation for fast point-of-sale customer scanning.
+- **Phase 3 — Receipt Export & History:** Support downloadable PDF/image receipt exports and local transaction history.
+
+---
+
+**Built for Hackathon 2026** by **The Trailblazers** (Lead Builder: **Erick Otieno**) • Track: **Consumer Products & Payments** • Powered by **Meta Earth (ME) Network**
